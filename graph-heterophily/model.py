@@ -3,20 +3,21 @@ sys.path.append('..')
 
 import dgl
 from torch import nn
-from models.mlp import MLP
+from models.utils import MLP
 from models.conv import SIRConv
 
 
 class SIRModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers=1, dropout=0, mlp_layers=1, **kwargs):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_layers=1, dropout=0, **kwargs):
         super(SIRModel, self).__init__()
         self.num_layers = num_layers
         self.embedding = nn.Embedding(input_dim, hidden_dim)
 
         self.convs = nn.ModuleList([
-            SIRConv(MLP(hidden_dim, hidden_dim, hidden_dim, mlp_layers, dropout, 'none', nn.ReLU(), True, False))
+            SIRConv(hidden_dim, hidden_dim, hidden_dim, nn.ReLU(inplace=True)) 
             for _ in range(num_layers)
         ])
+        self.drop = nn.Dropout(dropout)
 
         self.regression = nn.Linear(hidden_dim, output_dim, bias=False)
         self.pooling = dgl.nn.SumPooling()
@@ -26,6 +27,7 @@ class SIRModel(nn.Module):
 
         for i in range(self.num_layers):
             feats = self.convs[i](graphs, feats)
+            feats = self.drop(feats)
 
         feats = self.regression(feats)
         feats = self.pooling(graphs, feats)
@@ -39,7 +41,7 @@ class SAGEModel(nn.Module):
         self.embedding = nn.Embedding(input_dim, hidden_dim)
 
         self.convs = nn.ModuleList([
-            dgl.nn.SAGEConv(hidden_dim, hidden_dim, 'mean', bias=False)
+            dgl.nn.SAGEConv(hidden_dim, hidden_dim, 'mean')
             for _ in range(num_layers)
         ])
         self.drop = nn.Dropout(dropout)
@@ -66,7 +68,7 @@ class GATModel(nn.Module):
         self.embedding = nn.Embedding(input_dim, hidden_dim)
 
         self.convs = nn.ModuleList([
-            dgl.nn.GATv2Conv(hidden_dim, hidden_dim, num_heads, allow_zero_in_degree=True, bias=False, share_weights=True)
+            dgl.nn.GATv2Conv(hidden_dim, hidden_dim, num_heads, allow_zero_in_degree=True, share_weights=True)
             for _ in range(num_layers)
         ])
         self.drop = nn.Dropout(dropout)
@@ -93,9 +95,10 @@ class GINModel(nn.Module):
         self.embedding = nn.Embedding(input_dim, hidden_dim)
 
         self.convs = nn.ModuleList([
-            dgl.nn.GINConv(MLP(hidden_dim, hidden_dim, hidden_dim, mlp_layers, dropout, 'none', nn.ReLU(), True, False))
+            dgl.nn.GINConv(MLP(hidden_dim, hidden_dim, hidden_dim, mlp_layers, 0, 'none', nn.ReLU(inplace=True), True, False))
             for _ in range(num_layers)
         ])
+        self.drop = nn.Dropout(dropout)
 
         self.pooling = dgl.nn.SumPooling()
         self.regression = nn.Linear(hidden_dim, output_dim, bias=False)
@@ -105,6 +108,7 @@ class GINModel(nn.Module):
 
         for i in range(self.num_layers):
             feats = self.convs[i](graphs, feats)
+            feats = self.drop(feats)
 
         feats = self.pooling(graphs, feats)
         feats = self.regression(feats)

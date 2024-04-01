@@ -97,7 +97,7 @@ def run(model, train_loader, test_loader, device, args):
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(
-        'SIR-GCN/GraphSAGE/GATv2/GIN implementation on DictionaryLookup dataset',
+        'SIR-GCN/GraphSAGE/GATv2/GIN implementation on DictionaryLookup',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     argparser.add_argument('--cpu', action='store_true', help='CPU mode')
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     argparser.add_argument('--nlayers', type=int, default=1, help='number of graph convolution layers')
     argparser.add_argument('--dropout', type=float, default=0, help='dropout rate')
     argparser.add_argument('--nheads', type=int, default=1, help='number of attention heads for GAT')
-    argparser.add_argument('--nlayers-mlp', type=int, default=2, help='number of MLP layers for SIR-GCN and GIN')
+    argparser.add_argument('--nlayers-mlp', type=int, default=2, help='number of MLP layers for GIN')
     
     argparser.add_argument('--nodes', type=int, default=10, help='number of nodes in the bipartite graph')
     argparser.add_argument('--samples', type=int, default=5000, help='number of sample permutations')

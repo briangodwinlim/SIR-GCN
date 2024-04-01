@@ -6,9 +6,9 @@ This is the official repository of the paper [Contextualized Messages Boost Grap
 
 SIR-GCN emphasizes the non-linear and contextualized transformation of the neighborhood features to control and guide hash collisions when the space of node feature is uncountable. The model may be expressed as
 
-$$\boldsymbol{h_u^*} = \sigma\left(\sum_{v \in \mathcal{N}(u)} \text{MLP}_A\left(\text{MLP}_K\left(\boldsymbol{h_v}\right) + \text{MLP}_Q\left(\boldsymbol{h_u}\right)\right)\right),$$
+$$\boldsymbol{h_u^*} = \sum_{v \in \mathcal{N}(u)} \boldsymbol{W_R} \cdot \sigma\left(\boldsymbol{W_Q} \boldsymbol{h_u} + \boldsymbol{W_K} \boldsymbol{h_v}\right),$$
 
-where $\sigma$ is a non-linear activation function, $\text{MLP}_Q$ and $\text{MLP}_K$ serve as pre-processing steps for the features of query and key nodes, respectively, to ensure asymmetry and $\text{MLP}_A$ is the relational mechanism.
+where $\sigma$ is a non-linear activation function.
 
 ## Experiments
 

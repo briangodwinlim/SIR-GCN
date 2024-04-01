@@ -1,6 +1,46 @@
 import dgl
 import torch
 from torch import nn
+from .norm import GetNorm
+
+
+class MLP(nn.Module):
+    def __init__(self, input_dim, hidden_dim, output_dim, num_layers, 
+                 dropout, norm, activation, include_last=True, with_graph=True, **kwargs):
+        super(MLP, self).__init__()
+        self.num_layers = num_layers
+        self.activation = activation
+        self.include_last = include_last
+        self.with_graph = with_graph
+        self.drop = nn.Dropout(dropout)
+        self.linears = nn.ModuleList()
+        self.norms = nn.ModuleList()
+        
+        for i in range(num_layers):
+            _input_dim = hidden_dim if i > 0 else input_dim
+            _output_dim = hidden_dim if i < num_layers - 1 else output_dim
+            self.linears.append(nn.Linear(_input_dim, _output_dim))
+            self.norms.append(GetNorm(norm, with_graph, _output_dim, **kwargs))
+    
+    def forward(self, *args):
+        if self.with_graph:
+            [graphs, feats] = args
+            for i in range(self.num_layers):
+                feats = self.linears[i](feats)
+                if i < self.num_layers - 1 or self.include_last:
+                    feats = self.norms[i](graphs, feats)
+                    feats = self.activation(feats)
+        
+        else:
+            [feats] = args
+            for i in range(self.num_layers):
+                feats = self.linears[i](feats)
+                if i < self.num_layers - 1 or self.include_last:
+                    feats = self.norms[i](feats)
+                    feats = self.activation(feats)
+
+        feats = self.drop(feats)
+        return feats
 
 
 class VirtualNode(nn.Module):
