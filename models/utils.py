@@ -91,3 +91,12 @@ class CentralityEncoder(nn.Module):
                 nfeats = nfeats + self.encoder_out(out_degrees)
                 
             return nfeats
+
+
+class DropEdge(dgl.transforms.DropEdge):
+    def __call__(self, graph, efeats):
+        with graph.local_scope():
+            graph.edata['efeats_'] = efeats
+            graph = super().__call__(graph)
+            efeats = graph.edata.pop('efeats_')
+            return graph, efeats

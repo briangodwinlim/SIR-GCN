@@ -5,12 +5,12 @@ import torch.nn.functional as F
 
 
 class GraphNorm(nn.Module):
-    def __init__(self, normalized_shape, eps=1e-05, bias=True):
+    def __init__(self, normalized_shape, eps=1e-05, bias=True, mean_scale=True):
         super(GraphNorm, self).__init__()
         self.eps = eps
         self.weight = nn.Parameter(torch.ones(normalized_shape))
         self.bias = nn.Parameter(torch.zeros(normalized_shape)) if bias else 0
-        self.mean_scale = nn.Parameter(torch.ones(normalized_shape))
+        self.mean_scale = nn.Parameter(torch.ones(normalized_shape)) if mean_scale else 1
 
     def forward(self, graphs, feats):
         batch_nodes = graphs.batch_num_nodes().long()
