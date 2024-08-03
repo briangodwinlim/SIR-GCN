@@ -1,4 +1,4 @@
-# SIR-GCN/GCN/GraphSAGE/GATv2/GIN implementation on GraphHeterophily
+# SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on GraphHeterophily
 
 ## Experiments
 
@@ -32,6 +32,12 @@ python train.py --model GAT --nhidden $((10 * c)) --nlayers 1 --nheads 1 --nodes
 python train.py --model GIN --nhidden $((10 * c)) --nlayers 1 --nlayers-mlp 1 --nodes 50 --classes $c --epochs 500 --batch-size 256 --lr 1e-3 --factor 0.5 --patience 10
 ```
 
+### PNA (classes = $c$)
+
+```
+python train.py --model PNA --nhidden $((10 * c)) --nlayers 1 --nodes 50 --classes $c --epochs 500 --batch-size 256 --lr 1e-3 --factor 0.5 --patience 10
+```
+
 ## Summary
 
 |          Model          |          Test MSE          | Parameters |
@@ -61,3 +67,8 @@ python train.py --model GIN --nhidden $((10 * c)) --nlayers 1 --nlayers-mlp 1 --
 |    GIN (classes = 6)    |    34.649004 ± 1.501609    |   4,080   |
 |    GIN (classes = 8)    |    32.424090 ± 1.840737    |   7,200   |
 |    GIN (classes = 10)    |    30.091226 ± 1.429145    |   11,200   |
+|    PNA (classes = 2)    |   172.147297 ± 97.817594   |   2,960   |
+|    PNA (classes = 4)    |   224.827848 ± 85.803848   |   11,600   |
+|    PNA (classes = 6)    |  249.990954 ± 108.557330  |   25,920   |
+|    PNA (classes = 8)    |   251.487032 ± 98.836990   |   45,920   |
+|    PNA (classes = 10)    |   195.721559 ± 36.647286   |   71,600   |

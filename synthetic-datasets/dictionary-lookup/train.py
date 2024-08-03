@@ -10,7 +10,7 @@ from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
 from data import DictionaryLookupDataset
-from model import SIRModel, GCNModel, SAGEModel, GATModel, GINModel
+from model import SIRModel, GCNModel, SAGEModel, GATModel, GINModel, PNAModel
 
 loss_fn = nn.CrossEntropyLoss()
 acc_fn = lambda logits, labels: torch.mean(logits.argmax(dim=-1) == labels, dtype=torch.float32)
@@ -97,14 +97,14 @@ def run(model, train_loader, test_loader, device, args):
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(
-        'SIR-GCN/GCN/GraphSAGE/GATv2/GIN implementation on DictionaryLookup',
+        'SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on DictionaryLookup',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     argparser.add_argument('--cpu', action='store_true', help='CPU mode')
     argparser.add_argument('--gpu', type=int, default=0, help='GPU device ID')
     argparser.add_argument('--seed', type=int, default=0, help='seed')
     
-    argparser.add_argument('--model', type=str, default='SIR', help='model name', choices=['SIR', 'GCN', 'SAGE', 'GAT', 'GIN'])
+    argparser.add_argument('--model', type=str, default='SIR', help='model name', choices=['SIR', 'GCN', 'SAGE', 'GAT', 'GIN', 'PNA'])
     argparser.add_argument('--nhidden', type=int, default=64, help='number of hidden units')
     argparser.add_argument('--nlayers', type=int, default=1, help='number of graph convolution layers')
     argparser.add_argument('--dropout', type=float, default=0, help='dropout rate')
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         test_loader = GraphDataLoader(dataset, sampler=test_sampler, batch_size=args.batch_size, drop_last=False)
 
         # Load model
-        Model = {'SIR': SIRModel, 'GCN': GCNModel, 'SAGE': SAGEModel, 'GAT': GATModel, 'GIN': GINModel}
+        Model = {'SIR': SIRModel, 'GCN': GCNModel, 'SAGE': SAGEModel, 'GAT': GATModel, 'GIN': GINModel, 'PNA': PNAModel}
         model = Model[args.model](args.nodes, args.nhidden, args.nodes, args.nlayers, args.dropout, 
                                   num_heads=args.nheads, mlp_layers=args.nlayers_mlp).to(device)
         summary(model)

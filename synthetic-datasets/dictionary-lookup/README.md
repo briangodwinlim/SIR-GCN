@@ -1,4 +1,4 @@
-# SIR-GCN/GCN/GraphSAGE/GATv2/GIN implementation on DictionaryLookup
+# SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on DictionaryLookup
 
 ## Experiments
 
@@ -32,6 +32,12 @@ python train.py --model GAT --nhidden $((4 * n)) --nlayers 1 --nheads 1 --nodes 
 python train.py --model GIN --nhidden $((4 * n)) --nlayers 1 --nlayers-mlp 2 --nodes $n --epochs 500 --batch-size 256 --lr 1e-3 --factor 0.5 --patience 10
 ```
 
+### PNA (nodes = $n$)
+
+```
+python train.py --model PNA --nhidden $((4 * n)) --nlayers 1 --nodes $n --epochs 500 --batch-size 256 --lr 1e-3 --factor 0.5 --patience 10
+```
+
 ## Summary
 
 |         Model         |    Test Accuracy    | Parameters |
@@ -61,3 +67,8 @@ python train.py --model GIN --nhidden $((4 * n)) --nlayers 1 --nlayers-mlp 2 --n
 |    GIN (nodes = 30)    | 0.119097 ± 0.030321 |   40,080   |
 |    GIN (nodes = 40)    | 0.025363 ± 0.000633 |   71,040   |
 |    GIN (nodes = 50)    | 0.021782 ± 0.005502 |  110,800  |
+|    PNA (nodes = 10)    | 0.999870 ± 0.000142 |   12,680   |
+|    PNA (nodes = 20)    | 0.974085 ± 0.019026 |   50,160   |
+|    PNA (nodes = 30)    | 0.855210 ± 0.087069 |  112,440  |
+|    PNA (nodes = 40)    | 0.664748 ± 0.089522 |  199,520  |
+|    PNA (nodes = 50)    | 0.503510 ± 0.054933 |  311,400  |
