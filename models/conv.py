@@ -5,7 +5,7 @@ from dgl.utils import expand_as_pair
 
 
 class SIRConv(nn.Module):
-    r"""Semi-Isomorphic Relational Graph Convolution Network (SIR-GCN)
+    r"""Soft-Isomorphic Relational Graph Convolution Network (SIR-GCN)
     
     .. math::
         h_u^* = \sum_{v \in \mathcal{N}(u)} W_R ~ \sigma(W_Q h_u + W_K h_v)
@@ -22,18 +22,20 @@ class SIRConv(nn.Module):
         Activation function, the :math:`\sigma` in the formula
     dropout : float, optional
         Dropout rate for inner linear transformations, defaults to 0
-    bias : bool, optional
-        Whether to learn an additive bias, defaults to True
+    inner_bias : bool, optional
+        Whether to learn an additive bias for inner linear transformations, defaults to True
+    outer_bias : bool, optional
+        Whether to learn an additive bias for outer linear transformations, defaults to True
     agg_type : str, optional
         Aggregator type to use (``sum``, ``max``, ``mean``, or ``sym``), defaults to ``sum``
     """
-    def __init__(self, input_dim, hidden_dim, output_dim, activation, dropout=0, bias=True, agg_type='sum'):
+    def __init__(self, input_dim, hidden_dim, output_dim, activation, dropout=0, inner_bias=True, outer_bias=True, agg_type='sum'):
         super(SIRConv, self).__init__()
         self.activation = activation
         self.dropout = nn.Dropout(dropout)
-        self.linear_query = nn.Linear(input_dim, hidden_dim, bias=bias)
-        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=bias)
-        self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=bias)
+        self.linear_query = nn.Linear(input_dim, hidden_dim, bias=inner_bias)
+        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
+        self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=outer_bias)
 
         self._agg_type = agg_type
         self._agg_func = fn.sum if agg_type == 'sym' else getattr(fn, agg_type)
@@ -63,7 +65,7 @@ class SIRConv(nn.Module):
 
 
 class SIREConv(nn.Module):
-    r"""Semi-Isomorphic Relational Graph Convolution Network (SIR-GCN) with Edge Features
+    r"""Soft-Isomorphic Relational Graph Convolution Network (SIR-GCN) with Edge Features
     
     .. math::
         h_u^* = \sum_{v \in \mathcal{N}(u)} W_R ~ \sigma(W_Q h_u + W_E h_{u,v} + W_K h_v)
@@ -82,19 +84,21 @@ class SIREConv(nn.Module):
         Activation function, the :math:`\sigma` in the formula
     dropout : float, optional
         Dropout rate for inner linear transformations, defaults to 0
-    bias : bool, optional
-        Whether to learn an additive bias, defaults to True
+    inner_bias : bool, optional
+        Whether to learn an additive bias for inner linear transformations, defaults to True
+    outer_bias : bool, optional
+        Whether to learn an additive bias for outer linear transformations, defaults to True
     agg_type : str, optional
         Aggregator type to use (``sum``, ``max``, ``mean``, or ``sym``), defaults to ``sum``
     """
-    def __init__(self, input_dim, edge_dim, hidden_dim, output_dim, activation, dropout=0, bias=True, agg_type='sum'):
+    def __init__(self, input_dim, edge_dim, hidden_dim, output_dim, activation, dropout=0, inner_bias=True, outer_bias=True, agg_type='sum'):
         super(SIREConv, self).__init__()
         self.activation = activation
         self.dropout = nn.Dropout(dropout)
-        self.linear_query = nn.Linear(input_dim, hidden_dim, bias=bias)
-        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=bias)
-        self.linear_edge = nn.Linear(edge_dim, hidden_dim, bias=bias)
-        self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=bias)
+        self.linear_query = nn.Linear(input_dim, hidden_dim, bias=inner_bias)
+        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
+        self.linear_edge = nn.Linear(edge_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
+        self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=outer_bias)
 
         self._agg_type = agg_type
         self._agg_func = fn.sum if agg_type == 'sym' else getattr(fn, agg_type)
@@ -125,7 +129,7 @@ class SIREConv(nn.Module):
 
 
 class SIRConvBase(nn.Module):
-    r"""Semi-Isomorphic Relational Graph Convolution Network (SIR-GCN) Base Class
+    r"""Soft-Isomorphic Relational Graph Convolution Network (SIR-GCN) Base Class
     
     .. math::
         h_u^* = \sum_{v \in \mathcal{N}(u)} g([h_u \Vert h_v])
@@ -165,7 +169,7 @@ class SIRConvBase(nn.Module):
 
 
 class SIREConvBase(nn.Module):
-    r"""Semi-Isomorphic Relational Graph Convolution Network (SIR-GCN) with Edge Features Base Class
+    r"""Soft-Isomorphic Relational Graph Convolution Network (SIR-GCN) with Edge Features Base Class
     
     .. math::
         h_u^* = \sum_{v \in \mathcal{N}(u)} g([h_u \Vert h_{u,v} \Vert h_v])

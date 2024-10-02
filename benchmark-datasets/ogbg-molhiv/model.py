@@ -12,8 +12,8 @@ from models.norm import GetNorm
 
 
 class SIREConv2(SIREConv):
-    def __init__(self, input_dim, hidden_dim, output_dim, activation, dropout=0, bias=True, agg_type='sum'):
-        super(SIREConv2, self).__init__(input_dim, 1, hidden_dim, output_dim, activation, dropout, bias, agg_type)
+    def __init__(self, input_dim, hidden_dim, output_dim, activation, dropout=0, inner_bias=True, outer_bias=True, agg_type='sum'):
+        super(SIREConv2, self).__init__(input_dim, 1, hidden_dim, output_dim, activation, dropout, inner_bias, outer_bias, agg_type)
         self.linear_edge = BondEncoder(hidden_dim)
 
 
