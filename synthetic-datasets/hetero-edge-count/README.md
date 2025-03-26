@@ -1,4 +1,4 @@
-# SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on GraphHeterophily
+# SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on HeteroEdgeCount
 
 ## Experiments
 

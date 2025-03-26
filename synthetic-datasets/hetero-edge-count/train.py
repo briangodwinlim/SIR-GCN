@@ -9,7 +9,7 @@ from torchinfo import summary
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from data import GraphHeterophilyDataset
+from data import HeteroEdgeCountDataset
 from model import SIRModel, GCNModel, SAGEModel, GATModel, GINModel, PNAModel
 
 loss_fn = nn.MSELoss()
@@ -91,7 +91,7 @@ def run(model, train_loader, test_loader, device, args):
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(
-        'SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on GraphHeterophily',
+        'SIR-GCN/GCN/GraphSAGE/GATv2/GIN/PNA implementation on HeteroEdgeCount',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     argparser.add_argument('--cpu', action='store_true', help='CPU mode')
@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
         # Load dataset
         device = torch.device('cpu') if args.cpu else torch.device(f'cuda:{args.gpu}')
-        dataset = GraphHeterophilyDataset(args.nodes, args.classes, args.samples, args.normalize)
+        dataset = HeteroEdgeCountDataset(args.nodes, args.classes, args.samples, args.normalize)
         train_sampler = SubsetRandomSampler(torch.arange(int(args.train_size * len(dataset))))
         test_sampler = SubsetRandomSampler(torch.arange(int(args.train_size * len(dataset)), len(dataset)))
         train_loader = GraphDataLoader(dataset, sampler=train_sampler, batch_size=args.batch_size, drop_last=False)

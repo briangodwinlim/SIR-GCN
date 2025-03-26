@@ -4,10 +4,10 @@ import numpy as np
 from dgl.data import DGLDataset
 
 
-# Synthetic GraphHeterophily dataset for graph regression task
-class GraphHeterophilyDataset(DGLDataset):
+# Synthetic HeteroEdgeCount dataset for graph regression task
+class HeteroEdgeCountDataset(DGLDataset):
     def __init__(self, max_nodes, num_classes, num_samples=1000, normalize=True):
-        super(GraphHeterophilyDataset, self).__init__(name='GraphHeterophilyDataset')
+        super(HeteroEdgeCountDataset, self).__init__(name='HeteroEdgeCountDataset')
         self.max_nodes = max_nodes
         self.num_classes = num_classes
         self.num_samples = num_samples

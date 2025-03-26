@@ -12,21 +12,14 @@ python fingerprint.py --morgan --maccs --rdkit --save
 
 ## Experiments
 
-### SIR-GCN
+### SIR-GCN (100k)
 
 ```
-python train.py --nhidden 300 --nlayers 1 --input-dropout 0 --edge-dropout 0 --dropout 0.4 --norm bn --readout-layers 1 --readout-dropout 0 --readout-pooling mean --residual --resid-layers 0 --resid-dropout 0.1 --feat-dropout 0 --agg-type sum --epochs 200 --batch-size 128 --lr 1e-3 --l1 1e-7 --l2 1e-7 --factor 0.5 --patience 20
-```
-
-### SIR-GCN + GraphNorm
-
-```
-python train.py --nhidden 300 --nlayers 1 --input-dropout 0 --edge-dropout 0 --dropout 0.4 --norm gn --readout-layers 1 --readout-dropout 0 --readout-pooling mean --residual --resid-layers 0 --resid-dropout 0.1 --feat-dropout 0 --agg-type sum --epochs 200 --batch-size 128 --lr 1e-3 --l1 1e-7 --l2 1e-7 --factor 0.5 --patience 20
+python train.py --nhidden 80 --nlayers 4 --input-dropout 0.2 --norm bn --readout-pooling mean --residual --feat-dropout 0.2 --agg-type max --epochs 100 --batch-size 64 --lr 1e-3 --wd 1e-4 --factor 0.5 --patience 10
 ```
 
 ## Summary
 
-|        Model        |     Test ROC-AUC     | Parameters |
-| :-----------------: | :------------------: | :--------: |
-|       SIR-GCN       | 0.772064 ± 0.010995 |  327,901  |
-| SIR-GCN + GraphNorm | 0.798126 ± 0.006157 |  328,201  |
+|     Model     |     Test ROC-AUC     | Parameters |
+| :------------: | :------------------: | :--------: |
+| SIR-GCN (100k) | 0.776309 ± 0.008434 |   96,521   |

@@ -299,18 +299,10 @@ if __name__ == '__main__':
     print(f'Average val accuracy: {np.mean(val_accs):.6f} ± {np.std(val_accs):.6f}')
     print(f'Average test accuracy: {np.mean(test_accs):.6f} ± {np.std(test_accs):.6f}')
 
-# GIANT-XRT + SIR-GCN
-# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=256, nlayers=1, input_dropout=0.3, edge_dropout=0.2, dropout=0.4, norm='bn', readout_layers=1, readout_dropout=0, jumping_knowledge=False, residual=True, resid_layers=1, resid_dropout=0.6, feat_dropout=0.5, agg_type='sym', nheads=1, attn_dropout=0, add_self_loop=True, add_reverse_edge=True, use_xrt_emb=True, use_labels=False, label_iters=0, mask_rate=1, epochs=500, lr=0.01, wd=0, l1=1e-06, l2=1e-06, factor=0.5, patience=50, kd_mode='teacher', kd_alpha=0.5, kd_temp=1, flag=False, m=5, train_step_size=1e-05, untrain_step_size=1e-05, nruns=10, log_every=20, save_pred=True)
+# SIR-GCN
+# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=95, nlayers=3, input_dropout=0, edge_dropout=0, dropout=0.2, norm='bn', readout_layers=1, readout_dropout=0, jumping_knowledge=False, residual=True, resid_layers=0, resid_dropout=0, feat_dropout=0.2, agg_type='sym', nheads=1, attn_dropout=0, add_self_loop=True, add_reverse_edge=True, use_xrt_emb=False, use_labels=False, label_iters=0, mask_rate=1, epochs=1000, lr=0.01, wd=0.001, l1=0, l2=0, factor=0.5, patience=40, kd_mode='teacher', kd_alpha=0.5, kd_temp=1, flag=False, m=5, train_step_size=1e-05, untrain_step_size=1e-05, nruns=10, log_every=20, save_pred=False)
 # Runned 10 times
-# Val accuracy: [0.7632806470015773, 0.7622067854625995, 0.7633142051746703, 0.7639853686365314, 0.7635826705594148, 0.7643880667136481, 0.7628443907513675, 0.7629786234437397, 0.763716903251787, 0.763716903251787]
-# Test accuracy: [0.7518671686932905, 0.7517437195234862, 0.7528959117749933, 0.7540069543032323, 0.7508178507499537, 0.7528341871900911, 0.752031767586363, 0.7529987860831636, 0.7536777565170875, 0.7522786659259717]
-# Average val accuracy: 0.763401 ± 0.000590
-# Average test accuracy: 0.752515 ± 0.000908
-
-# GIANT-XRT + SIR-GCN + BoT
-# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=256, nlayers=1, input_dropout=0.3, edge_dropout=0.2, dropout=0.4, norm='bn', readout_layers=1, readout_dropout=0, jumping_knowledge=False, residual=True, resid_layers=1, resid_dropout=0.6, feat_dropout=0.5, agg_type='sym', nheads=1, attn_dropout=0, add_self_loop=True, add_reverse_edge=True, use_xrt_emb=True, use_labels=True, label_iters=3, mask_rate=0.8, epochs=500, lr=0.01, wd=0, l1=1e-06, l2=1e-06, factor=0.5, patience=50, kd_mode='teacher', kd_alpha=0.5, kd_temp=1, flag=False, m=5, train_step_size=1e-05, untrain_step_size=1e-05, nruns=10, log_every=20, save_pred=True)
-# Runned 10 times
-# Val accuracy: [0.7659988590221148, 0.7669720460418135, 0.7681130239269774, 0.7673747441189301, 0.7654619282526259, 0.7663008825799523, 0.7670727205610927, 0.766670022483976, 0.7652941373871607, 0.7660324171952079]
-# Test accuracy: [0.7551591465547394, 0.7561261650515401, 0.7592329691582824, 0.756475937699319, 0.7560232907433697, 0.75242268995741, 0.7531839598378701, 0.7551591465547394, 0.7555294940641524, 0.752052342447997]
-# Average val accuracy: 0.766529 ± 0.000835
-# Average test accuracy: 0.755137 ± 0.002029
+# Val accuracy: [0.7376422027584818, 0.7343199436222692, 0.7343199436222692, 0.7325413604483372, 0.7333131984294775, 0.7382126917010637, 0.7349911070841303, 0.734823316218665, 0.7346555253531998, 0.7359307359307359]
+# Test accuracy: [0.7274653827953007, 0.7272390593173261, 0.7257576692796741, 0.7233092607452215, 0.724235129518754, 0.7244408781350945, 0.7244820278583627, 0.7222187930786166, 0.7259839927576487, 0.7264160648519639]
+# Average val accuracy: 0.735075 ± 0.001676
+# Average test accuracy: 0.725155 ± 0.001617

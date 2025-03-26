@@ -58,7 +58,7 @@ def loss_fn(logits, labels, model, args):
     return F.binary_cross_entropy(torch.sigmoid(logits).float(), labels.float()) + regularizer(model, args)
 
 def eval_fn(logits, labels, evaluator, eval_metric):
-    return evaluator.eval({'y_pred': logits, 'y_true': labels})[eval_metric]
+    return evaluator.eval({'y_pred': logits, 'y_true': labels})[eval_metric].item()
 
 
 def train(model, train_loader, device, optimizer, args):
@@ -245,18 +245,10 @@ if __name__ == '__main__':
     print(f'Average val ROC-AUC: {np.mean(val_aucs):.6f} ± {np.std(val_aucs):.6f}')
     print(f'Average test ROC-AUC: {np.mean(test_aucs):.6f} ± {np.std(test_aucs):.6f}')
 
-# SIR-GCN
-# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=300, nlayers=1, input_dropout=0.0, edge_dropout=0.0, dropout=0.4, norm='bn', readout_layers=1, readout_dropout=0.0, readout_pooling='mean', jumping_knowledge=False, virtual_node=False, vn_layers=0, vn_dropout=0, vn_residual=False, rand_feat=False, centrality_encoder=False, residual=True, resid_layers=0, resid_dropout=0.1, feat_dropout=0.0, agg_type='sum', nlayers_mlp=2, add_self_loop=False, epochs=200, batch_size=128, lr=0.001, wd=0, l1=1e-07, l2=1e-07, factor=0.5, patience=20, flag=False, m=5, step_size=0.001, nruns=10, log_every=20, eval_metric='rocauc')
+# SIR-GCN (100k)
+# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=80, nlayers=4, input_dropout=0.2, edge_dropout=0, dropout=0, norm='bn', readout_layers=1, readout_dropout=0, readout_pooling='mean', jumping_knowledge=False, virtual_node=False, vn_layers=0, vn_dropout=0, vn_residual=False, rand_feat=False, centrality_encoder=False, residual=True, resid_layers=0, resid_dropout=0, feat_dropout=0.2, agg_type='max', nlayers_mlp=2, add_self_loop=False, epochs=100, batch_size=64, lr=0.001, wd=0.0001, l1=0, l2=0, factor=0.5, patience=10, flag=False, m=5, step_size=0.001, nruns=10, log_every=20, eval_metric='rocauc')
 # Runned 10 times
-# Val ROC-AUC: [0.800469699196551, 0.7847650891632373, 0.7807631540270429, 0.7952919851067999, 0.7778083970213601, 0.7801905741720556, 0.7956410444836369, 0.7931455761316875, 0.7998328189300411, 0.7932956104252399]
-# Test ROC-AUC: [0.7789007126441221, 0.7656868614689353, 0.7538075281484771, 0.7895923057610228, 0.7786032947720117, 0.7569671102184283, 0.7659147530852277, 0.7812626740570503, 0.7809131114930763, 0.7689903242627321]
-# Average val ROC-AUC: 0.790120 ± 0.008027
-# Average test ROC-AUC: 0.772064 ± 0.010995
-
-# SIR-GCN + GraphNorm
-# Namespace(cpu=False, gpu=0, seed=0, model='SIR', nhidden=300, nlayers=1, input_dropout=0.0, edge_dropout=0.0, dropout=0.4, norm='gn', readout_layers=1, readout_dropout=0.0, readout_pooling='mean', jumping_knowledge=False, virtual_node=False, vn_layers=0, vn_dropout=0, vn_residual=False, rand_feat=False, centrality_encoder=False, residual=True, resid_layers=0, resid_dropout=0.1, feat_dropout=0.0, agg_type='sum', nlayers_mlp=2, add_self_loop=False, epochs=200, batch_size=128, lr=0.001, wd=0, l1=1e-07, l2=1e-07, factor=0.5, patience=20, flag=False, m=5, step_size=0.001, nruns=10, log_every=20, eval_metric='rocauc')
-# Runned 10 times
-# Val ROC-AUC: [0.8311654908877131, 0.8222859102488732, 0.8288721095434058, 0.8336854546345286, 0.8144351361943954, 0.8158956741132666, 0.8266767097785616, 0.8242853468547913, 0.823017710170488, 0.826946159122085]
-# Test ROC-AUC: [0.8039861720002316, 0.7982386681859441, 0.8029210683867978, 0.7940052917205818, 0.802742424535043, 0.7991077463836691, 0.7984375905289789, 0.8063133702852509, 0.7880434152841886, 0.7874640298190386]
-# Average val ROC-AUC: 0.824727 ± 0.005836
-# Average test ROC-AUC: 0.798126 ± 0.006157
+# Val ROC-AUC: [0.838615152851264, 0.8255223642955123, 0.8070528365667256, 0.8289119145600626, 0.8288506760728983, 0.8175582990397805, 0.8139146090534979, 0.8125153096217912, 0.8317595042132078, 0.7856132422104645]
+# Test ROC-AUC: [0.7810521640047122, 0.7676374592016069, 0.7727263948705074, 0.7627493771606251, 0.7736630680391665, 0.7808648293709805, 0.7730875451437842, 0.7826358176094556, 0.794580814615964, 0.7740879507136098]
+# Average val ROC-AUC: 0.819031 ± 0.014535
+# Average test ROC-AUC: 0.776309 ± 0.008434
