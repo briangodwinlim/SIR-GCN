@@ -1,6 +1,6 @@
 # Soft-Isomorphic Relational Graph Convolution Network (SIR-GCN)
 
-This is the official repository for the paper [Contextualized Messages Boost Graph Representations](https://arxiv.org/abs/2403.12529).
+This is the official repository for the paper [Contextualized Messages Boost Graph Representations](https://arxiv.org/abs/2403.12529) ([TMLR, 2025](https://openreview.net/forum?id=sXr1fRjs1N)).
 
 ## Method
 
