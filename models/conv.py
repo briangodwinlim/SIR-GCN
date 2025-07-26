@@ -34,7 +34,7 @@ class SIRConv(nn.Module):
         self.activation = activation
         self.dropout = nn.Dropout(dropout)
         self.linear_query = nn.Linear(input_dim, hidden_dim, bias=inner_bias)
-        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
+        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=False)
         self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=outer_bias)
 
         self._agg_type = agg_type
@@ -42,16 +42,19 @@ class SIRConv(nn.Module):
     
     def message_func(self, edges):
         if self._agg_type in ['sum', 'mean', 'sym']:
-            return {'m': edges.src['norm'] * edges.dst['norm'] * self.activation(edges.dst['eq'] + edges.src['ek'])}
+            return {'m': edges.src['out_norm'] * edges.dst['in_norm'] * self.activation(edges.dst['eq'] + edges.src['ek'])}
         else:
             return {'m': self.linear_relation(self.activation(edges.dst['eq'] + edges.src['ek']))}
         
     def forward(self, graph, feat):
         with graph.local_scope():
-            degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
-            norm = torch.pow(degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
-            norm = norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
-            graph.ndata['norm'] = norm
+            in_degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
+            out_degs = graph.out_degrees().float().clamp(min=1).to(graph.device)
+            
+            in_norm = torch.pow(in_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['in_norm'] = in_norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
+            out_norm = torch.pow(out_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['out_norm'] = out_norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
  
             feat_key, feat_query = expand_as_pair(feat, graph)
             graph.ndata['ek'] = self.dropout(self.linear_key(feat_key))
@@ -96,8 +99,8 @@ class SIREConv(nn.Module):
         self.activation = activation
         self.dropout = nn.Dropout(dropout)
         self.linear_query = nn.Linear(input_dim, hidden_dim, bias=inner_bias)
-        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
-        self.linear_edge = nn.Linear(edge_dim, hidden_dim, bias=inner_bias)     # Change to False to prevent overparametrization
+        self.linear_key = nn.Linear(input_dim, hidden_dim, bias=False)
+        self.linear_edge = nn.Linear(edge_dim, hidden_dim, bias=False)
         self.linear_relation = nn.Linear(hidden_dim, output_dim, bias=outer_bias)
 
         self._agg_type = agg_type
@@ -105,16 +108,19 @@ class SIREConv(nn.Module):
     
     def message_func(self, edges):
         if self._agg_type in ['sum', 'mean', 'sym']:
-            return {'m': edges.src['norm'] * edges.dst['norm'] * self.activation(edges.dst['eq'] + edges.src['ek'] + edges.data['e'])}
+            return {'m': edges.src['out_norm'] * edges.dst['in_norm'] * self.activation(edges.dst['eq'] + edges.src['ek'] + edges.data['e'])}
         else:
             return {'m': self.linear_relation(self.activation(edges.dst['eq'] + edges.src['ek'] + edges.data['e']))}
     
     def forward(self, graph, nfeat, efeat):
         with graph.local_scope():
-            degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
-            norm = torch.pow(degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
-            norm = norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
-            graph.ndata['norm'] = norm
+            in_degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
+            out_degs = graph.out_degrees().float().clamp(min=1).to(graph.device)
+            
+            in_norm = torch.pow(in_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['in_norm'] = in_norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
+            out_norm = torch.pow(out_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['out_norm'] = out_norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
  
             nfeat_key, nfeat_query = expand_as_pair(nfeat, graph)
             graph.ndata['ek'] = self.dropout(self.linear_key(nfeat_key))
@@ -149,14 +155,17 @@ class SIRConvBase(nn.Module):
     
     def message_func(self, edges):
         message = torch.cat((edges.dst['eq'], edges.src['ek']), dim=-1)
-        return {'m': edges.src['norm'] * edges.dst['norm'] * self._message_func(message)}
+        return {'m': edges.src['out_norm'] * edges.dst['in_norm'] * self._message_func(message)}
         
     def forward(self, graph, feat):
         with graph.local_scope():
-            degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
-            norm = torch.pow(degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
-            norm = norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
-            graph.ndata['norm'] = norm
+            in_degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
+            out_degs = graph.out_degrees().float().clamp(min=1).to(graph.device)
+            
+            in_norm = torch.pow(in_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['in_norm'] = in_norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
+            out_norm = torch.pow(out_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['out_norm'] = out_norm.reshape((graph.num_nodes(),) + (1,) * (feat.dim() - 1))
  
             feat_key, feat_query = expand_as_pair(feat, graph)
             graph.ndata['ek'] = feat_key
@@ -189,14 +198,17 @@ class SIREConvBase(nn.Module):
     
     def message_func(self, edges):
         message = torch.cat((edges.dst['eq'], edges.src['ek'], edges.data['e']), dim=-1)
-        return {'m': edges.src['norm'] * edges.dst['norm'] * self._message_func(message)}
+        return {'m': edges.src['out_norm'] * edges.dst['in_norm'] * self._message_func(message)}
         
     def forward(self, graph, nfeat, efeat):
         with graph.local_scope():
-            degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
-            norm = torch.pow(degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
-            norm = norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
-            graph.ndata['norm'] = norm
+            in_degs = graph.in_degrees().float().clamp(min=1).to(graph.device)
+            out_degs = graph.out_degrees().float().clamp(min=1).to(graph.device)
+            
+            in_norm = torch.pow(in_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['in_norm'] = in_norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
+            out_norm = torch.pow(out_degs, -0.5) if self._agg_type == 'sym' else torch.ones(graph.num_nodes(), device=graph.device)
+            graph.ndata['out_norm'] = out_norm.reshape((graph.num_nodes(),) + (1,) * (nfeat.dim() - 1))
  
             nfeat_key, nfeat_query = expand_as_pair(nfeat, graph)
             graph.ndata['ek'] = nfeat_key
